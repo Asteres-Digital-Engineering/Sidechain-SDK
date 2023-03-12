@@ -13,5 +13,3 @@ def subscribe_accounts(id="subscribe", accounts=[]):
 def subscribe_stream(id="subscribe", streams=["transactions"]):
     subscribe = { "id": id, "command": "subscribe", "streams":streams }
     return json.dumps(subscribe)
-
-

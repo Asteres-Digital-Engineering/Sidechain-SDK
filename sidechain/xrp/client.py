@@ -2,9 +2,6 @@ import websocket
 import rel
 import json
 
-'''
-Websocket Events
-'''
 class XrpClient:
 
     def __init__(self, url, port):
@@ -57,4 +54,3 @@ class XrpClient:
     
     def send(self, message):
         self.websocket.send(message)
-    
