@@ -1,5 +1,6 @@
 import websocket
 import rel
+import json
 
 '''
 Websocket Events
@@ -11,13 +12,31 @@ class XrpClient:
         self.websocket = None
 
     def on_message(self, ws, message):
-        print(message)
+        try:
+            json_msg = json.loads(message)
+            if "transaction" in json_msg:
+                transaction = json_msg["transaction"]
+                account = transaction["Account"]
+                if "Memos" in transaction:
+                    for memo in transaction["Memos"]:
+                        memo = memo["Memo"]
+                        mType = None
+                        mFormat = None
+                        mData = bytearray.fromhex(memo["MemoData"]).decode()
+                        if "MemoType" in memo:
+                            mType = bytearray.fromhex(memo["MemoType"]).decode()
+                        if "MemoFormat" in memo:
+                            mFormat = bytearray.fromhex(memo["MemoFormat"]).decode()
+                        print(account, mType, mFormat, mData)
+        except:
+            print("Message Error.")
 
     def on_error(self, ws, error):
         print(error)
 
     def on_close(self, ws, close_status_code, close_msg):
-        print("Closed Connection.")
+        print(f"Connection Closed: {close_status_code}")
+        print(close_msg)
 
     def on_open(self, ws):
         print("Opened Connection.")
