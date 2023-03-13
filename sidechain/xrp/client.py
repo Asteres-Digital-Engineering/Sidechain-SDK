@@ -2,11 +2,18 @@ import websocket
 import rel
 import json
 
+def json_none_remover(data):
+    for key, value in data.items():
+        if value == None:
+            data[key] = ""
+    return data
+
 class XrpClient:
 
-    def __init__(self, url, port):
+    def __init__(self, url, port, database_access_object):
         self.url = f"{url}:{port}"
         self.websocket = None
+        self.database_access_object = database_access_object
 
     def on_message(self, ws, message):
         try:
@@ -41,7 +48,7 @@ class XrpClient:
                 mFormat = None
                 mData = bytearray.fromhex(memo["MemoData"]).decode()
                 try:
-                    mData = json.loads(mData)
+                    mData = json.dumps(json.loads(mData))
                 except:
                     pass
 
@@ -63,7 +70,9 @@ class XrpClient:
                     "memo_data": mData,
                     "memo_index": mIdx
                 }
-                print(json.dumps(parsed_memo, indent=2))
+                tx_memo_id = f"{block_index}{transaction_index:03}{mIdx:03}"
+                parsed_memo = json_none_remover(parsed_memo)
+                self.database_access_object.commit(time, tx_memo_id, parsed_memo)
         except:
             print("Message Error.")
 
