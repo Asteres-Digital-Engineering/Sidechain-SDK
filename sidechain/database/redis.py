@@ -25,7 +25,7 @@ class RedisAccessObject:
 
     def retrieve(self, id):
         try:
-            return self.connection.xrange(name=self.database_name, min=id, max=id)
+            return self.connection.xrange(name=self.database_name, min=id, max=id, count=1)
         except Exception as e:
             self.logger(e)
             return None

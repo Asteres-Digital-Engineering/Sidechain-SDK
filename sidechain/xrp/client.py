@@ -11,20 +11,59 @@ class XrpClient:
     def on_message(self, ws, message):
         try:
             json_msg = json.loads(message)
-            if "transaction" in json_msg:
-                transaction = json_msg["transaction"]
+            if "engine_result_code" not in json_msg:
+                return
+            if json_msg["engine_result_code"] != 0:
+                return
+            if "transaction" not in json_msg:
+                return
+            if "Memos" not in json_msg["transaction"]:
+                return
+            
+            transaction = json_msg["transaction"]
+            block_index = json_msg["ledger_index"]
+            block_hash = json_msg["ledger_hash"]
+            transaction_index = json_msg["meta"]["TransactionIndex"]
+            transaction_hash = transaction["hash"]
+            time = transaction["date"]
+            
+            transaction_type = None
+            account = None
+
+            if "TransactionType" in transaction:
+                transaction_type = transaction["TransactionType"]
+            if "Account" in transaction:
                 account = transaction["Account"]
-                if "Memos" in transaction:
-                    for memo in transaction["Memos"]:
-                        memo = memo["Memo"]
-                        mType = None
-                        mFormat = None
-                        mData = bytearray.fromhex(memo["MemoData"]).decode()
-                        if "MemoType" in memo:
-                            mType = bytearray.fromhex(memo["MemoType"]).decode()
-                        if "MemoFormat" in memo:
-                            mFormat = bytearray.fromhex(memo["MemoFormat"]).decode()
-                        print(account, mType, mFormat, mData)
+
+            for memo, mIdx in zip(transaction["Memos"], range(len(transaction["Memos"]))):
+                memo = memo["Memo"]
+                mType = None
+                mFormat = None
+                mData = bytearray.fromhex(memo["MemoData"]).decode()
+                try:
+                    mData = json.loads(mData)
+                except:
+                    pass
+
+                if "MemoType" in memo:
+                    mType = bytearray.fromhex(memo["MemoType"]).decode()
+                if "MemoFormat" in memo:
+                    mFormat = bytearray.fromhex(memo["MemoFormat"]).decode()
+
+                parsed_memo = {
+                    "account": account,
+                    "block_index": block_index,
+                    "block_hash": block_hash,
+                    "transaction_index": transaction_index,
+                    "transaction_hash": transaction_hash,
+                    "transaction_time": time,
+                    "transaction_type": transaction_type,
+                    "memo_type": mType,
+                    "memo_format": mFormat,
+                    "memo_data": mData,
+                    "memo_index": mIdx
+                }
+                print(json.dumps(parsed_memo, indent=2))
         except:
             print("Message Error.")
 
