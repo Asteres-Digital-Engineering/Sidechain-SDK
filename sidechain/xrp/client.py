@@ -10,10 +10,11 @@ def json_none_remover(data):
 
 class XrpClient:
 
-    def __init__(self, url, port, database_access_object):
+    def __init__(self, url, port, database_access_object, debug=True):
         self.url = f"{url}:{port}"
         self.websocket = None
         self.database_access_object = database_access_object
+        self.log_activity = debug
 
     def on_message(self, ws, message):
         try:
@@ -70,6 +71,10 @@ class XrpClient:
                     "memo_data": mData,
                     "memo_index": mIdx
                 }
+
+                if self.log_activity:
+                    print(parsed_memo)
+                    
                 tx_memo_id = f"{block_index}{transaction_index:03}{mIdx:03}"
                 parsed_memo = json_none_remover(parsed_memo)
                 self.database_access_object.commit(time, tx_memo_id, parsed_memo)
