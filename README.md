@@ -13,7 +13,7 @@ One way to achieve this is by utilizing an existing feature in the XRPL transact
 While this method offers a more efficient and cost-effective way to execute smart contracts, it can be challenging for many users to implement it themselves due to the complexity of the components involved. The process of developing libraries or tools to successfully implement a sidechain or optimistic rollup can be time-consuming and require specialized knowledge. To address this issue, the SDK aims to provide all the necessary components in an easy-to-use manner. By doing so, developers can focus on creating their own applications rather than worrying about building blockchain infrastructure from scratch. Our goal is to simplify the development process and make it accessible to a broader audience, enabling more users to take advantage of the benefits of blockchain technology.
 
 ## Requirements
-This project is currently being developed under Python 3.10.6 but will be upgraded to the latest version 3.11.x at our earliest convenience. It also relies on Docker version 20.10.21 to stand up the redis server. There are python package requirements in requirements.txt. You can install them with `pip install -r requirements.txt`.
+This project is currently being developed under Python 3.10.6 but will be upgraded to the latest version 3.11.x at our earliest convenience. It also relies on Docker version >= 20.10.21 to stand up the redis server. There are python package requirements in requirements.txt. You can install them with `pip install -r requirements.txt`.
 
 ## Steps to Run
 In a new command prompt/terminal:
